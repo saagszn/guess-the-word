@@ -18,7 +18,7 @@ const hiddenLetters = function (word) {
     wordInProgress.innerText = hiddenLetters.join("");
 };
 
-placeholder(word);
+hiddenLetters(word);
 
 guessLetterButton.addEventListener("click", function(e) {
     e.preventDefault();

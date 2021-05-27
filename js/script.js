@@ -8,7 +8,7 @@ const message = document.querySelector(".message");
 const playAgainButton = document.querySelector(".play-again");
 
 let word = "magnolia"
-const guessedLetters = [];
+let guessedLetters = [];
 let remainingGuesses = 8
 
 // API for retrieving words
@@ -35,14 +35,14 @@ const placeholder = function (word) {
 };
 
 // Guess button
-guessLetterButton.addEventListener("click", function(e) {
+guessLetterButton.addEventListener("click", function (e) {
     e.preventDefault();
     // Empty message
     message.innerText = "";
     // Grab what was entered in input
     const guess = letterInput.value;
     // Make sure it's a single letter
-    const goodGuess = inputValidate(guess);
+    const goodGuess = validateInput(guess);
 
     if (goodGuess) {
         // We have a letter!
@@ -52,7 +52,7 @@ guessLetterButton.addEventListener("click", function(e) {
 });
 
 // Make sure the input is correct
-const inputValidate = function (input) {
+const validateInput = function (input) {
     const acceptedLetter = /[a-zA-Z]/;
     if (input.length === 0) {
         // No input?
@@ -76,7 +76,7 @@ const makeGuess = function (guess) {
     } else {
         guessedLetters.push(guess); 
         console.log(guessedLetters);
-        updateRemainingGuesses(guess);
+        updateGuessesRemaining(guess);
         showGuessedLetters();
         updateWordInProgress(guessedLetters);
     }
@@ -106,7 +106,7 @@ const updateWordInProgress = function (guessedLetters) {
     checkIfWin();
 };
 
-const updateRemainingGuesses = function (guess) {
+const updateGuessesRemaining = function (guess) {
    const upperWord = word.toUpperCase();
    if (!upperWord.includes(guess)) {
        // wrong guess sorry
@@ -115,8 +115,10 @@ const updateRemainingGuesses = function (guess) {
    } else {
        message.innerText = `Nice! The word has the letter ${guess}.`
    }
+
    if (remainingGuesses === 0) {
-       message.innerText = `Oof! Sorry, you're out of guesses. The word was <span class="highlight">${word}</span>.`;
+       message.innerHTML = `Oof! Sorry, you're out of guesses. The word was <span class="highlight">${word}</span>.`;
+       startOver();
    } else if (remainingGuesses === 1) {
        remainingGuessesSpan.innerText = `${remainingGuesses} guess`;
    } else {
@@ -128,6 +130,30 @@ const checkIfWin = function () {
     if (word.toUpperCase() === wordInProgress.innerText) {
         message.classList.add("win");
         message.innerHTML = `<p class="highlight">You got it! Nice job!</p>`;
+        
+        startOver();
     }
 };
 
+const startOver = function () {
+    guessLetterButton.classList.add("hide");
+    remainingGuessesElement.classList.add("hide");
+    guessedLettersElement.classList.add("hide");
+    playAgainButton.classList.remove("hide");
+};
+
+playAgainButton.addEventListener("click", function () {
+    message.classList.remove("win");
+    guessedLetters = [];
+    remainingGuesses = 8
+    remainingGuessesSpan.innerText = `${remainingGuesses} guesses`;
+    guessedLettersElement.innerHTML = "";
+    message.innerText = "";
+    
+    getWord();
+    
+    guessLetterButton.classList.remove("hide");
+    playAgainButton.classList.add("hide");
+    remainingGuessesElement.classList.remove("hide");
+    guessedLettersElement.classList.remove("hide");
+});
